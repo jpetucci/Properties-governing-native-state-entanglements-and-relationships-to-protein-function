@@ -3,10 +3,6 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
 This repository contains code and data (externally linked) to reproduce the analysis in "Properties governing native state entanglements and relationships to protein function"
-
-    1. Code to generate non-covalent lasso entanglements given a PDB file (.pdb or .pdb1)
-    2. Code and Data to run the Gene Ontology (GO) and Structural Enrichment statistical tests 
-        a. They are located in the E.coli, Yeast and Humans folders. 
  
 Please refer to the paper for the exact details of the Methods and Supplementary Information for the data. 
 
