@@ -1,0 +1,41 @@
+Bootstrap: docker
+From: rockylinux:8
+
+%post
+    # Update the system and install necessary dependencies
+    yum -y update
+    yum -y install epel-release
+    yum -y install wget gcc gcc-c++ make zlib-devel bzip2 bzip2-devel xz-devel \
+                   libcurl-devel libpng-devel cairo-devel pango-devel \
+                   freetype-devel tar libxml2-devel openssl-devel
+
+    # Install Miniconda if not already installed
+    if [ ! -d "/opt/miniconda" ]; then
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh
+        bash /tmp/miniconda.sh -b -p /opt/miniconda
+        rm /tmp/miniconda.sh
+    fi
+
+    # Ensure Miniconda is in PATH
+    export PATH="/opt/miniconda/bin:$PATH"
+
+    # Create a custom Conda environment from the YAML file
+    cp /environment.yml /tmp/environment.yml
+    conda env create --prefix /opt/env_custom --file /tmp/environment.yml
+    rm /tmp/environment.yml
+    conda clean -afy
+
+%files
+    # Include the Conda environment YAML file
+    environment.yml /environment.yml
+
+%environment
+    # Set environment variables for the container
+    export PATH="/opt/miniconda/bin:$PATH"
+    export CONDA_DEFAULT_ENV=/opt/env_custom
+
+%runscript
+    # Activate the custom Conda environment and execute the command
+    source /opt/miniconda/bin/activate /opt/env_custom
+    exec "$@"
+
