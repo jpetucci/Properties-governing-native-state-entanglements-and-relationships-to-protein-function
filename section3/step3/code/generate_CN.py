@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 """
 General-purpose script to compute CN/Theta/Tau features from PDB structures across different species.
-It merges the logic previously used for E. coli, yeast, and human into one codebase.
+It merges the logic previously used for E. coli, yeast, and human into one codebase, applies
+species-specific filters, compares sequences against STRIDE data, and computes final features.
 
-Overview:
-  1) Reads a CSV file (space-delimited) containing (geneid, pdbid, repchain).
-  2) Loads corresponding .npz files (with PDB sequences) for each row.
-  3) Converts 3-letter amino acids (including modifications) to standard 1-letter codes.
-  4) Applies species-specific filters (if chosen: e.g. remove 'UNK' for yeast, remove 'TYX' for human).
-  5) Checks for sequence length mismatch with STRIDE-processed files and drops mismatches.
-  6) Uses Bio.PDB to calculate CN, Theta, Tau for each residue in each structure.
-  7) Saves the list of result DataFrames to a pickle file.
+Key Steps:
+  1) Read a space-delimited CSV with columns (geneid, pdbid, repchain).
+  2) Load .npz files (containing per-residue PDB sequences) for each entry.
+  3) Convert 3-letter AA codes (including modifications) to 1-letter codes.
+  4) Perform species-specific filtering (remove 'UNK' for yeast, 'TYX' for human, etc.).
+  5) Check sequence length mismatch with STRIDE outputs, remove such rows.
+  6) In parallel, compute CN, Theta, Tau features with Bio.PDB.
+  7) Identify any "bad pdb" returns (where HSExposureCB or chain retrieval fails), remove them,
+     and write the dropped indices to a text file (default: dropped_bad_pdb_indices.txt).
+  8) Save final DataFrame list to a pickle.
 
-Usage Example:
+Example usage:
     python cn_theta_tau.py \
         --species yeast \
         --inputfile /path/to/yeast_entanglements.csv \
@@ -21,11 +24,6 @@ Usage Example:
         --stride-dir /path/to/stride_processed \
         --output-pickle my_yeast_cn.pkl \
         --n-jobs 10
-
-Species-Specific Behavior:
-  - yeast: drops rows if 'UNK' is in the sequence
-  - human: drops rows if 'TYX' is in the sequence, also removes geneid == 'P01833'
-  - ecoli: no special dropping of 'UNK' or 'TYX'
 """
 
 import os
@@ -141,10 +139,12 @@ def import_pickle(path):
 def getCN(rowid, rawdata_df, pdbdir):
     """
     For the given rowid in `rawdata_df`, parse the corresponding PDB file,
-    run HSExposureCB on the chain, compute 'CN_exp' and the angles/dihedrals (Theta & Tau).
+    run HSExposureCB on the chain, and compute 'CN_exp' as well as
+    angles/dihedrals (Theta & Tau).
 
-    Returns a DataFrame with columns [CN_exp, Theta_exp, Tau_exp], indexed 1..N,
-    or a ['bad pdb', rowid, geneid, pdbid] placeholder if something fails.
+    Returns:
+      - A DataFrame with columns [CN_exp, Theta_exp, Tau_exp], indexed 1..N
+      - or a list like ['bad pdb', rowid, geneid, pdbid, message] if something fails.
     """
     geneid  = rawdata_df.iloc[rowid]["geneid"]
     pdbid   = rawdata_df.iloc[rowid]["pdbid"]
@@ -200,7 +200,12 @@ def getCN(rowid, rawdata_df, pdbdir):
     tau_series = pd.Series([calc_dihedral(*win) for win in tau_windows])
     mean_tau = tau_series.mean()
     # Insert one mean at front, two at the end => total len +3
-    tau_series = pd.concat([pd.Series([mean_tau]), tau_series, pd.Series([mean_tau]), pd.Series([mean_tau])])
+    tau_series = pd.concat([
+        pd.Series([mean_tau]),
+        tau_series,
+        pd.Series([mean_tau]),
+        pd.Series([mean_tau]),
+    ])
 
     # Impute 'HOLD' if found
     if HOLDflag:
@@ -243,6 +248,8 @@ def main():
                         help="Path to store the final list of DataFrames (CN_df_list) as a pickle.")
     parser.add_argument("--n-jobs", type=int, default=4,
                         help="Parallel processes to use when computing CN/Theta/Tau. Default=4.")
+    parser.add_argument("--dropped-indices-file", default="dropped_bad_pdb_indices.txt",
+                        help="File path to save the indices of 'bad pdb' entries that are removed.")
     args = parser.parse_args()
 
     # Read the CSV (space-delimited), naming columns
@@ -291,7 +298,7 @@ def main():
         if removed > 0:
             print(f"Dropped {removed} row(s) with geneid == 'P01833' for human.")
 
-    # E. coli case has no special dropping
+    # E. coli case: no special dropping
     rawdata_df.reset_index(drop=True, inplace=True)
     print(f"Shape after species-specific filtering: {rawdata_df.shape}")
 
@@ -332,20 +339,33 @@ def main():
         delayed(getCN)(idx, rawdata_df, args.pdbdir) for idx in range(len(rawdata_df))
     )
 
-    # Identify any 'bad pdb' placeholders
-    bad_pdbs = [x for x in CN_df_list if isinstance(x, list) and 'bad pdb' in x]
-    if bad_pdbs:
-        print("Encountered 'bad pdb' entries:")
-        for item in bad_pdbs:
-            print(item)
-        # Remove them from final results, or keep them if you'd like to keep a record
-        CN_df_list = [x for x in CN_df_list if not (isinstance(x, list) and 'bad pdb' in x)]
+    # Identify and remove 'bad pdb' placeholders
+    bad_pdb_indices = [
+        i for i, item in enumerate(CN_df_list)
+        if isinstance(item, list) and 'bad pdb' in item
+    ]
+    if bad_pdb_indices:
+        print("Encountered 'bad pdb' entries at the following CN_df_list indices:")
+        for i in bad_pdb_indices:
+            print(f"  index={i}, content={CN_df_list[i]}")
 
-    print(f"Final CN_df_list length: {len(CN_df_list)}")
+        # Write them to file
+        with open(args.dropped_indices_file, "w") as f:
+            for idx in bad_pdb_indices:
+                f.write(f"{idx}\n")
+        print(f"Saved dropped 'bad pdb' indices to: {args.dropped_indices_file}")
+
+        # Filter them out from CN_df_list
+        CN_df_list = [
+            item for i, item in enumerate(CN_df_list) if i not in bad_pdb_indices
+        ]
+
+    print(f"Final CN_df_list length after removing 'bad pdb': {len(CN_df_list)}")
 
     # Write results to pickle
     export_pickle(args.output_pickle, CN_df_list)
     print(f"Saved results to {args.output_pickle}")
+    print("Done.")
 
 
 if __name__ == "__main__":
