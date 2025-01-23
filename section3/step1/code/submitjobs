@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Loop through a range of IDs (customize the range as needed)
+for i in {<START_ID>..<END_ID>}
+do
+        export SPLITID=${i}
+        sbatch <SLURM_JOB_SCRIPT> --export=SPLITID
+        echo "Sleeping... SPLITID=${i}"
+        sleep <SLEEP_INTERVAL>
+done
+
