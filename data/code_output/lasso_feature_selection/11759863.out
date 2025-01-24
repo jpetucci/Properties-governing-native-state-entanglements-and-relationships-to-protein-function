@@ -1,0 +1,36 @@
+ 
+Job started on p-sc-2145 at Sat May 11 16:59:10 EDT 2024
+ 
+WARNING: ignoring environment value of R_HOME
+Loading required package: Matrix
+Loaded glmnet 4.1-8
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: snow
+
+Attaching package: ‘parallel’
+
+The following objects are masked from ‘package:snow’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, clusterSplit, makeCluster, parApply,
+    parCapply, parLapply, parRapply, parSapply, splitIndices,
+    stopCluster
+
+            used   (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   1602930   85.7    2823361  150.8   2568115  137.2
+Vcells 308309781 2352.3  748413168 5710.0 748290222 5709.1
+species: ecoli 
+[1] 308419    990
+lambda.max 0.07868806 
+lmr 0.08902151 
+EV_bound 0.6111111 
+          D_0_pssm           I_0_pssm          ACH3_pssm             CN_exp 
+              1.00               1.00               1.00               1.00 
+         Theta_exp            Tau_exp                psi               rsaa 
+              1.00               1.00               1.00               1.00 
+       SS7__Strand        P_normcount VINM940102_aaindex           G_0_pssm 
+              1.00               1.00               0.99               0.94 
+ 
+Job Ended at Sat May 11 17:16:19 EDT 2024
+ 

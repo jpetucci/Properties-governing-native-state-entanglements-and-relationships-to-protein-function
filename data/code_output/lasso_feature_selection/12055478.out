@@ -1,0 +1,54 @@
+ 
+Job started on p-sc-2022 at Tue May 21 23:10:48 EDT 2024
+ 
+Lmod has detected the following error: The following module(s) are unknown:
+"r/4.3.3"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "r/4.3.3"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+WARNING: ignoring environment value of R_HOME
+Loading required package: Matrix
+Loaded glmnet 4.1-8
+Warning message:
+package ‘glmnet’ was built under R version 4.3.2 
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: snow
+Warning message:
+package ‘doSNOW’ was built under R version 4.3.2 
+
+Attaching package: ‘parallel’
+
+The following objects are masked from ‘package:snow’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, clusterSplit, makeCluster, parApply,
+    parCapply, parLapply, parRapply, parSapply, splitIndices,
+    stopCluster
+
+            used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   1589105   84.9    2798731   149.5    2699473   144.2
+Vcells 814083171 6211.0 1658774877 12655.5 1658680116 12654.8
+species: human 
+[1] 744463    990
+lambda.max 0.06867424 
+lmr 0.097701 
+EV_bound 0.6111111 
+          N_0_pssm           D_0_pssm           G_0_pssm           G_1_pssm 
+              1.00               1.00               1.00               1.00 
+         ACH3_pssm             CN_exp          Theta_exp            Tau_exp 
+              1.00               1.00               1.00               1.00 
+               psi               rsaa        SS7__Strand          ACH5_pssm 
+              1.00               1.00               1.00               0.99 
+CIDH920101_aaindex           K_0_pssm           N_1_pssm           E_0_pssm 
+              0.99               0.97               0.94               0.93 
+ 
+Job Ended at Wed May 22 02:24:24 EDT 2024
+ 

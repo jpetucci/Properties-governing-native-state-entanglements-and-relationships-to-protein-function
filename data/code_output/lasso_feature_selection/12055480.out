@@ -1,0 +1,54 @@
+ 
+Job started on p-sc-2022 at Tue May 21 23:10:48 EDT 2024
+ 
+Lmod has detected the following error: The following module(s) are unknown:
+"r/4.3.3"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "r/4.3.3"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+WARNING: ignoring environment value of R_HOME
+Loading required package: Matrix
+Loaded glmnet 4.1-8
+Warning message:
+package ‘glmnet’ was built under R version 4.3.2 
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: snow
+Warning message:
+package ‘doSNOW’ was built under R version 4.3.2 
+
+Attaching package: ‘parallel’
+
+The following objects are masked from ‘package:snow’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, clusterSplit, makeCluster, parApply,
+    parCapply, parLapply, parRapply, parSapply, splitIndices,
+    stopCluster
+
+            used   (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   1589105   84.9    2798731  149.5   2699482  144.2
+Vcells 197205086 1504.6  420453896 3207.9 420325467 3206.9
+species: yeast 
+[1] 178422    990
+lambda.max 0.07026339 
+lmr 0.097701 
+EV_bound 0.6111111 
+          N_0_pssm           D_0_pssm           G_0_pssm          ACH3_pssm 
+              1.00               1.00               1.00               1.00 
+            CN_exp          Theta_exp            Tau_exp                psi 
+              1.00               1.00               1.00               1.00 
+              rsaa        SS7__Strand        P_normcount        S_normcount 
+              1.00               1.00               1.00               1.00 
+         ACH5_pssm           G_1_pssm RACS820111_aaindex 
+              0.98               0.93               0.92 
+ 
+Job Ended at Tue May 21 23:57:37 EDT 2024
+ 
