@@ -20,14 +20,14 @@ git clone <insert repo link>
 
 ### Option 1: Apptainer/Singularity
 A singularity/apptainer container and definition file is available that contains the full software environment to run the analysis code available in this repo.
-* Download pre-built container <insert link> or build the container using the provided definition file
+* Download [pre-built container](https://drive.google.com/drive/folders/1HoPYLs1FgORvOfMCb9-Tev0hNCRJKoVK?usp=sharing) or build the container using the provided [definition file](./software_environment)
 #### 
 ```bash 
 sudo singularity build centos_r_container.sif singularity.def 
 ```
 
 ### Option 1: conda/mamba
-* Create a conda environment using the provided environment file
+* Create a conda environment using the provided [environment file](./software_environment)
 ```bash
 conda env create --prefix <path to install location> --file <path to environment.yml>
 ```
@@ -39,19 +39,19 @@ conda env create --prefix <path to install location> --file <path to environment
 Each section below is independent and corresponds to the main results subsections from the accompanying manuscript. To run a given analysis section, shell into the provided/created 
 container or activate the created conda environment and follow the steps below.
 
-### Section 1 - Amino Acid, Polar/Hydrophobic Residues, Secondary Structure, and 3-letter PH Motif Enrichment Study
+### [Section 1 - Amino Acid, Polar/Hydrophobic Residues, Secondary Structure, and 3-letter PH Motif Enrichment Study](./section1)
 
 ---
 
-### Section 2 - Functional Region Enrichment Study
+### [Section 2 - Functional Region Enrichment Study](./section2)
 
 ---
 
-### Section 3 - Machine Learning Robust and Predictive Feature identification
+### [Section 3 - Machine Learning Robust and Predictive Feature identification](section3)
 
 ---
 
-### Section 4 - Controlling for Residue Burial with Propensity Score Matching
+### [Section 4 - Controlling for Residue Burial with Propensity Score Matching](section4)
 
 ---
 
