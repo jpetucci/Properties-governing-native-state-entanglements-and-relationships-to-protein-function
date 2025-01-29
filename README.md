@@ -26,7 +26,7 @@ A singularity/apptainer container and definition file is available that contains
 sudo singularity build centos_r_container.sif singularity.def 
 ```
 
-### Option 1: conda/mamba
+### Option 2: conda/mamba
 * Create a conda environment using the provided [environment file](./software_environment)
 ```bash
 conda env create --prefix <path to install location> --file <path to environment.yml>
